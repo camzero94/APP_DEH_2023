@@ -5,6 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from './Login'
 import Home from './Home'
 import Register from './Register'
+import Wordle from './Wordle'
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +16,7 @@ export default function App() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Wordle" component={Wordle} />
       </Stack.Navigator>
     </NavigationContainer>
   );
