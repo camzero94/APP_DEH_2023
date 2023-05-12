@@ -20,7 +20,7 @@ def get_user(db: Session, user_id: int):
     return db.query(User).filter(User.userId == user_id).first()
 
 def get_pois_by_id(db: Session, pois_id: int) -> CreatePoisSchema:
-    poi = db.query(POI).filter(POI.poisId == pois_id).first()
+    poi = db.query(POI).filter(POI.poiId == pois_id).first()
     if not poi:
         raise HTTPException(status_code=404, detail="POI not found")
     return poi

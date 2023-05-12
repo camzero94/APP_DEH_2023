@@ -27,6 +27,7 @@ class BasePoisSchema(BaseModel):
     keywords:str = None
     period:str = None
     year:int
+    image_url:str = None
     description:str
     description_en:str = None
     latitude:float
