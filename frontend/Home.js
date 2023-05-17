@@ -8,9 +8,11 @@ export default function Home({navigation}) {
       <Image source={require('./assets/logo.png')} style={[{ width: 150, height: 150}]} />
 
 
-      <View style={styles.placeContainer} backgroundColor={YELLOW}>
+      <TouchableOpacity style={styles.placeContainerYELLOW} onPress={() => {
+          navigation.navigate('Wordle')
+        }}>
         <Text style={styles.placeContainerText}>Hello</Text>
-      </View>
+      </TouchableOpacity>
 
       {/* <View style={styles.placeContainer} backgroundColor={BLUE}>
         <Text style={styles.placeContainerText}>Hello</Text>
@@ -33,8 +35,9 @@ const styles = StyleSheet.create({
     paddingTop: 50
   },
 
-  placeContainer: {
-    borderRadius: 30,
+  placeContainerYELLOW: {
+    backgroundColor: YELLOW,
+    borderRadius: 10,
     width: "90%",
     height: 80,
     marginTop: 20,
