@@ -6,6 +6,7 @@ import Login from './Login'
 import Home from './Home'
 import Register from './Register'
 import Wordle from './Wordle'
+import POI from './POI'
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,7 @@ export default function App() {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Wordle" component={Wordle} />
+        <Stack.Screen name="POI" component={POI} />
       </Stack.Navigator>
     </NavigationContainer>
   );

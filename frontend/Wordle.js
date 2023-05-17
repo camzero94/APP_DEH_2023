@@ -80,18 +80,18 @@ const Keyboard = ({ onKeyPress }) => {
   )
 }
 
-// IMPORTANT: words
-const words = [
-  "LIGHT",
-  "TIGHT",
-  "GOING",
-  "WRUNG",
-  "COULD",
-  "PERKY",
-  "MOUNT",
-  "WHACK",
-  "SUGAR",
-]
+// // IMPORTANT: words
+// const words = [
+//   "LIGHT",
+//   "TIGHT",
+//   "GOING",
+//   "WRUNG",
+//   "COULD",
+//   "PERKY",
+//   "MOUNT",
+//   "WHACK",
+//   "SUGAR",
+// ]
 
 const defaultGuess = {
   0: "",
@@ -102,7 +102,9 @@ const defaultGuess = {
   5: "",
 }
 
-export default function App() {
+export default function App({route, navigation}) {
+  const words = route.params.words
+
   const [activeWord, setActiveWord] = React.useState(words[0])
   const [guessIndex, setGuessIndex] = React.useState(0)
   const [guesses, setGuesses] = React.useState(defaultGuess)
