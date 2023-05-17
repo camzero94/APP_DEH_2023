@@ -35,8 +35,9 @@ const styles = StyleSheet.create({
     paddingTop: 50
   },
 
-  placeContainer: {
-    borderRadius: 30,
+  placeContainerYELLOW: {
+    backgroundColor: YELLOW,
+    borderRadius: 10,
     width: "90%",
     height: 80,
     marginTop: 20,

@@ -8,6 +8,8 @@ import {
   Button,
 } from "react-native"
 
+import { allwords } from "./WordDictionary"
+
 const Block = ({index, guess, word, guessed}) => {
   const letter = guess[index]
   const wordLetter = word[index]
@@ -111,11 +113,12 @@ export default function App() {
 
     if (letter === "ENTER") {
       if (guess.length !== 5) {
-        alert("Word too short.")
+        alert("Word requires 5 letters.")
         return
       }
 
-      if (!words.includes(guess)) {
+      if (!allwords.includes(guess.toLowerCase())) {
+        console.log(guess.toLowerCase())
         alert("Not a valid word.")
         return
       }
