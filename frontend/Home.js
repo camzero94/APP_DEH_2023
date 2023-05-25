@@ -9,13 +9,13 @@ export default function Home({navigation}) {
 
 
       <TouchableOpacity style={styles.placeContainerYELLOW} onPress={() => {
-          navigation.navigate('POI', {id: 0})
+          navigation.navigate('POI', {id: 3})
         }}>
         <Text style={styles.placeContainerText}>Hello</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.placeContainerYELLOW} onPress={() => {
-          navigation.navigate('POI', {id: 1})
+          navigation.navigate('POI', {id: 2})
         }}>
         <Text style={styles.placeContainerText}>Hello</Text>
       </TouchableOpacity>

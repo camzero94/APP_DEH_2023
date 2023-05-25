@@ -1,6 +1,16 @@
-/backend/env_APP/ 
-/backend/my_app/__pycache__/ 
-/backend/my_app/core_fun/config.py 
+# BACKEND - CAMILO's ENV
+/backend/env_APP/
+
+# BACKEND - KAREN's ENV
+/backend/venv_backend
+
+# CONFIG
+/backend/my_app/core_fun/config.py
+
+# CACHE
+__pycache__/
+.DS_Store
+
+# FRONTEND
 /frontend/.expo/
 /frontend/node_modules/
-

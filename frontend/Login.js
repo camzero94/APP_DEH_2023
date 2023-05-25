@@ -3,11 +3,48 @@ import {useState, useRef} from 'react'
 
 import { Image } from 'react-native';
 import { BLUE, LIGHT_BLUE } from './CONSTANTS';
+import JWT from 'expo-jwt';
+import { setToken } from './Utils';
 
 export default function Login({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
+  function login(navigation) {
+    if(email.length == 0) return;
+    if(password.length == 0) return;
+  
+    const form_data = new FormData()
+    form_data.append("username", email)
+    form_data.append("password", password)
+  
+    handleLoginToken(navigation, form_data);
+  
+  }
+
+  async function handleLoginToken(navigation, form_data) {
+    // Send data to the backend via POST
+    const res = await fetch('https://efce-223-139-248-33.ngrok-free.app/api/token', {  // Enter your IP address here
+      method: 'POST', 
+      mode: 'cors', 
+      body: form_data // body data type must match "Content-Type" header
+    })
+  
+    const data = await res.json()
+  
+    if('access_token' in data) {
+      const decodeToken = JWT.decode(data['access_token'], 'SECRET')
+      try {
+        setToken('token', data['access_token'])
+        setToken('permissions', decodeToken.permissions)
+        setToken('id', decodeToken.id.toString())
+        navigation.navigate("Home")
+      } catch (e) {
+        console.log('Error: ' + e)
+      }
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Image source={require('./assets/logo.png')} style={[{ width: 150, height: 150}]} />
@@ -32,7 +69,7 @@ export default function Login({navigation}) {
       </View>
 
       <TouchableOpacity style={styles.loginBtn} onPress={() => {
-          navigation.navigate('Home')
+          login(navigation)
         }}>
         <Text style={styles.text}>Login</Text>
       </TouchableOpacity>
@@ -50,6 +87,10 @@ export default function Login({navigation}) {
     </View>
   );
 }
+
+
+
+
 
 const styles = StyleSheet.create({
   container: {

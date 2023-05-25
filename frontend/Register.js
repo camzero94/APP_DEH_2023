@@ -59,7 +59,7 @@ function register(navigation, email, password) {
 async function handleToken(navigation, form_data) {
     
   // Send data to the backend via POST
-  const res = await fetch('https://f6a7-140-116-1-143.ngrok-free.app/api/signup', {  // Enter your IP address here
+  const res = await fetch('https://efce-223-139-248-33.ngrok-free.app/api/signup', {  // Enter your IP address here
 
     method: 'POST', 
     mode: 'cors', 
@@ -74,7 +74,7 @@ async function handleToken(navigation, form_data) {
       setToken('token', data['access_token'])
       setToken('permissions', decodeToken.permissions)
       setToken('id', decodeToken.id.toString())
-      navigation.navigate("Login")
+      navigation.navigate("Home")
     } catch (e) {
       console.log('Error: ' + e)
     }

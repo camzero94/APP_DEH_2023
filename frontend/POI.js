@@ -1,16 +1,47 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
-import {useState, useRef} from 'react'
+import {useState, useEffect} from 'react'
 import { BLUE, LIGHT_BLUE, LIGHT_YELLOW, RED, YELLOW } from './CONSTANTS';
 import {TITLE, IMGURL, DESC, WORDLE_WORDS} from './dummy'
+import { getToken } from './Utils';
 
 
 export default function Home({route, navigation}) {
-  const id = route.params.id
+  
 
-  const title = TITLE[id]
-  const imgurl = IMGURL[id]
-  const desc = DESC[id]
-  const wordle = WORDLE_WORDS[id]
+  const [title, setTitle] = useState('');
+  const [imgurl, setImgurl] = useState('');
+  const [desc, setDesc] = useState('')
+  const [stringOfWordleWords, setStringOfWordleWords] = useState('')
+  // TODO: change to an array of wordle words, handle it inside data
+
+  async function getPOI(poi_id) {
+    const user_token = await getToken('token')
+  
+    const res = await fetch('https://efce-223-139-248-33.ngrok-free.app/api/v1/poi/3' , {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${user_token}`,
+      },
+    })
+
+    const data = await res.json()
+
+    try {
+      setTitle(data.poiTitle)
+      setImgurl(data.image_url)
+      setDesc(data.description)
+      setStringOfWordleWords(data.keywords)
+    } catch (e) {
+      console.log('Error: ' + e)
+    }
+  }
+
+  useEffect(() => {
+    const id = route.params.id
+    getPOI(id)
+  }, [])
+  
 
   return (
     <View style={styles.container}>
@@ -18,7 +49,12 @@ export default function Home({route, navigation}) {
         <Text style={styles.title}>{title}</Text>
       </View>
 
-      <Image source={imgurl} style={styles.imageContainer} />
+      {/* <Image source={imgurl} style={styles.imageContainer} /> */}
+
+      <Image 
+        source={{uri: 'https://engineering.fb.com/wp-content/uploads/2016/04/yearinreview.jpg'}}
+        style={styles.imageContainer}
+      />
       {/* <Image source={{uri: ''}} /> 
        FOR FUTURE REFERENCE */}
       
