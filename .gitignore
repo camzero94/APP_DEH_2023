@@ -1,4 +1,6 @@
 /backend/env_APP/ 
 /backend/my_app/__pycache__/ 
+/backend/my_app/core_fun/config.py 
 /frontend/.expo/
 /frontend/node_modules/
+
