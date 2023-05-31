@@ -1,14 +1,20 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import {
   StyleSheet,
   View,
   SafeAreaView,
   Text,
   TouchableOpacity,
-  Button,
+  Button
 } from "react-native"
 
 import { allwords } from "./WordDictionary"
+import { LIGHT_GRAY, LIGHT_GREEN, WHITE } from "./CONSTANTS"
+import WordleScore from "./WordleScore"
+
+const letterMap = new Map()
+const correctLetterMap = new Map()
+var active
 
 const Block = ({index, guess, word, guessed}) => {
   const letter = guess[index]
@@ -48,13 +54,37 @@ const GuessRow = ({guess, word, guessed}) => {
 }
 
 const KeyboardRow = ({letters, onKeyPress}) => (
+
+
   <View style={styles.keyboardRow}>
     {letters.map(letter => (
+      letterMap.get(letter) ? 
+        active.includes(letter) ? 
+          correctLetterMap.get(letter) ?
+          <TouchableOpacity onPress={() => onKeyPress(letter)} key={letter}>
+            <View style={styles.keyCorrect}>
+              <Text style={styles.keyLetterGuessed}>{letter}</Text>
+            </View>
+          </TouchableOpacity>
+          :
+          <TouchableOpacity onPress={() => onKeyPress(letter)} key={letter}>
+            <View style={styles.keyWrongPos}>
+              <Text style={styles.keyLetterGuessed}>{letter}</Text>
+            </View>
+          </TouchableOpacity>
+        :
+        <TouchableOpacity onPress={() => onKeyPress(letter)} key={letter}>
+          <View style={styles.keyGuessed}>
+            <Text style={styles.keyLetterGuessed}>{letter}</Text>
+          </View>
+        </TouchableOpacity>
+      :
       <TouchableOpacity onPress={() => onKeyPress(letter)} key={letter}>
         <View style={styles.key}>
           <Text style={styles.keyLetter}>{letter}</Text>
         </View>
       </TouchableOpacity>
+
     ))}
   </View>
 )
@@ -80,19 +110,6 @@ const Keyboard = ({ onKeyPress }) => {
   )
 }
 
-// // IMPORTANT: words
-// const words = [
-//   "LIGHT",
-//   "TIGHT",
-//   "GOING",
-//   "WRUNG",
-//   "COULD",
-//   "PERKY",
-//   "MOUNT",
-//   "WHACK",
-//   "SUGAR",
-// ]
-
 const defaultGuess = {
   0: "",
   1: "",
@@ -105,12 +122,15 @@ const defaultGuess = {
 export default function App({route, navigation}) {
   const words = route.params.words
 
-  const [activeWord, setActiveWord] = React.useState(words[0])
-  const [guessIndex, setGuessIndex] = React.useState(0)
-  const [guesses, setGuesses] = React.useState(defaultGuess)
-  const [gameComplete, setGameComplete] = React.useState(false)
+  const [activeWord, setActiveWord] = useState('null')
+  const [guessIndex, setGuessIndex] = useState(0)
+  const [guesses, setGuesses] = useState(defaultGuess)
+  const [gameComplete, setGameComplete] = useState(false)
+ 
 
   const handleKeyPress = (letter) => {
+    if(gameComplete) return
+
     const guess = guesses[guessIndex]
 
     if (letter === "ENTER") {
@@ -120,7 +140,6 @@ export default function App({route, navigation}) {
       }
 
       if (!allwords.includes(guess.toLowerCase())) {
-        console.log(guess.toLowerCase())
         alert("Not a valid word.")
         return
       }
@@ -128,7 +147,18 @@ export default function App({route, navigation}) {
       if (guess === activeWord) {
         setGuessIndex(guessIndex + 1)
         setGameComplete(true)
+        for(var i in guess) {
+          for(var j in activeWord) {
+            if(i==j && guess[i].includes(activeWord[j])) {
+              correctLetterMap.set(guess[i], true)
+              continue
+            }
+          }
+          letterMap.set(guess[i], true)
+        }
         alert("You win!")
+        var finalScore = (5 - guessIndex) * 100
+        navigation.navigate('WordleScore', {score: finalScore})
         return
       }
 
@@ -137,8 +167,21 @@ export default function App({route, navigation}) {
       } else {
         setGameComplete(true)
         alert("You lose!")
+        navigation.navigate('WordleScore', {score: 0})
         return
       }
+
+      for(var i in guess) {
+        for(var j in activeWord) {
+          if(i==j && guess[i].includes(activeWord[j])) {
+            correctLetterMap.set(guess[i], true)
+            console.log(correctLetterMap)
+            continue
+          }
+        }
+        letterMap.set(guess[i], true)
+      }
+
     }
 
     if (letter === "⌫") {
@@ -154,16 +197,24 @@ export default function App({route, navigation}) {
     setGuesses({ ...guesses, [guessIndex]: guess + letter })
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!gameComplete) {
-      setActiveWord(words[Math.floor(Math.random() * words.length)])
+      letterMap.clear()
+      correctLetterMap.clear()
+      if(activeWord==='null') setActiveWord(words[Math.floor(Math.random() * words.length)].toUpperCase())
+      active = activeWord
+      console.log("active: " + active)
       setGuesses(defaultGuess)
       setGuessIndex(0)
     }
-  }, [gameComplete])
+  }, [gameComplete, activeWord])
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={{alignItems:'center', marginTop: 20, marginBottom: -75}}>
+        <Text style={{fontSize: 30, fontWeight: 'bold'}}>WORDLE</Text>
+      </View>
+
       <View>
         <GuessRow
           guess={guesses[0]}
@@ -197,7 +248,7 @@ export default function App({route, navigation}) {
         />
       </View>
       <View>
-        {gameComplete ? (
+        {/* {gameComplete ? (
           <View style={styles.gameCompleteWrapper}>
             <Text>
               <Text style={styles.bold}>Correct Word:</Text> {activeWord}
@@ -211,7 +262,7 @@ export default function App({route, navigation}) {
               />
             </View>
           </View>
-        ) : null}
+        ) : null} */}
         <Keyboard onKeyPress={handleKeyPress} />
       </View>
     </SafeAreaView>
@@ -256,6 +307,7 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "space-between",
     flex: 1,
+    backgroundColor: LIGHT_GREEN
   },
 
   // keyboard
@@ -266,7 +318,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   key: {
-    backgroundColor: "#d3d6da",
+    backgroundColor: LIGHT_GRAY,
     padding: 10,
     margin: 3,
     borderRadius: 5,
@@ -274,6 +326,29 @@ const styles = StyleSheet.create({
   keyLetter: {
     fontWeight: "500",
     fontSize: 15,
+  },
+  keyGuessed: {
+    backgroundColor: "#787c7e",
+    padding: 10,
+    margin: 3,
+    borderRadius: 5,
+  },
+  keyCorrect: {
+    backgroundColor: "#6aaa64",
+    padding: 10,
+    margin: 3,
+    borderRadius: 5,
+  },
+  keyWrongPos: {
+    backgroundColor: "#c9b458",
+    padding: 10,
+    margin: 3,
+    borderRadius: 5,
+  },
+  keyLetterGuessed: {
+    fontWeight: "800",
+    fontSize: 15,
+    color: WHITE,
   },
 
   // Game complete

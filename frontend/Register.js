@@ -5,14 +5,51 @@ import {useState, useRef} from 'react'
 import JWT from 'expo-jwt';
 
 import { Image } from 'react-native';
-import { BLUE, LIGHT_BLUE } from './CONSTANTS';
+import { BLUE, LIGHT_GREEN, WHITE, GRAY, GREEN } from './CONSTANTS';
 
 import { setToken } from './Utils';
 
 export default function Login({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  function register(navigation, email, password) {
+    if(email.length == 0) return;
+    if(password.length == 0) return;
   
+    const form_data = new FormData()
+    form_data.append("username", email)
+    form_data.append("password", password)
+  
+    handleToken(navigation, form_data);
+  }
+
+  async function handleToken(navigation, form_data) {
+    
+    // Send data to the backend via POST
+    const res = await fetch('https://b723-223-139-248-33.ngrok-free.app/api/signup', {  // Enter your IP address here
+  
+      method: 'POST', 
+      mode: 'cors', 
+      body: form_data // body data type must match "Content-Type" header
+    })
+  
+    const data = await res.json()
+  
+    if('access_token' in data) {
+      const decodeToken = JWT.decode(data['access_token'], 'SECRET')
+      try {
+        setToken('token', data['access_token'])
+        setToken('permissions', decodeToken.permissions)
+        setToken('id', decodeToken.id.toString())
+        navigation.navigate("Login")
+      } catch (e) {
+        console.log('Error: ' + e)
+      }
+    }
+  }
+  
+
   return (
     <View style={styles.container}>
       <Image source={require('./assets/logo.png')} style={[{ width: 150, height: 150}]} />
@@ -21,7 +58,6 @@ export default function Login({navigation}) {
         <TextInput
             style={styles.TextInput}
             placeholder="Email"
-            placeholderTextColor="#fff"
             onChangeText={(email) => setEmail(email)}
         />
       </View>
@@ -30,7 +66,6 @@ export default function Login({navigation}) {
         <TextInput
             style={styles.TextInput}
             placeholder="Password"
-            placeholderTextColor="#fff"
             secureTextEntry={true}
             onChangeText={(password) => setPassword(password)}
           />
@@ -39,58 +74,26 @@ export default function Login({navigation}) {
       <TouchableOpacity style={styles.loginBtn} onPress={register(navigation, email, password)}>
         <Text style={styles.text}>Sign Up</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => {
+          navigation.navigate('Login');
+        }}>
+          <Text style={styles.signup_button}><Text style={{color: "#000", fontWeight: 'black'}}>Already Have an Account? </Text>Login</Text> 
+        </TouchableOpacity>
     </View>
   );
-}
-
-function register(navigation, email, password) {
-  if(email.length == 0) return;
-  if(password.length == 0) return;
-
-  const form_data = new FormData()
-  form_data.append("username", email)
-  form_data.append("password", password)
-
-  handleToken(navigation, form_data);
-
-  
-}
-
-async function handleToken(navigation, form_data) {
-    
-  // Send data to the backend via POST
-  const res = await fetch('https://efce-223-139-248-33.ngrok-free.app/api/signup', {  // Enter your IP address here
-
-    method: 'POST', 
-    mode: 'cors', 
-    body: form_data // body data type must match "Content-Type" header
-  })
-
-  const data = await res.json()
-
-  if('access_token' in data) {
-    const decodeToken = JWT.decode(data['access_token'], 'SECRET')
-    try {
-      setToken('token', data['access_token'])
-      setToken('permissions', decodeToken.permissions)
-      setToken('id', decodeToken.id.toString())
-      navigation.navigate("Home")
-    } catch (e) {
-      console.log('Error: ' + e)
-    }
-  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: LIGHT_GREEN,
     alignItems: 'center',
     justifyContent: 'top',
     paddingTop: 125,
   },
   inputView: {
-    backgroundColor: LIGHT_BLUE,
+    backgroundColor: WHITE,
     borderRadius: 30,
     width: "75%",
     height: 45,
@@ -98,25 +101,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   TextInput: {
-    color: "#fff",
-    placeholderTextColor: "white",
+    color: GRAY,
     height: 50,
     flex: 1,
     padding: 10,
     width: "75%",
     textAlign: "center"
   },
+  text: {
+    color: "white"
+  },
   signup_button: {
     height: 30,
     marginTop: 40,
     marginBottom: 10,
-  },
-  forgot_button: {
-    height: 30,
-    marginBottom: 0,
-  },
-  text: {
-    color: "white"
+    color: BLUE,
+    fontWeight: 'bold'
   },
   loginBtn: { 
     width: "80%",

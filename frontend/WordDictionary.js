@@ -1991,6 +1991,7 @@ export const allwords = [
 "caret",
 "carex",
 "cargo",
+"carib",
 "carks",
 "carle",
 "carls",

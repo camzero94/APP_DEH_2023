@@ -1,14 +1,15 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Button } from 'react-native';
-import {useState, useRef} from 'react'
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import {useState} from 'react'
 
 import { Image } from 'react-native';
-import { BLUE, LIGHT_BLUE } from './CONSTANTS';
+import { GRAY, GREEN, LIGHT_GREEN, LIGHT_RED, RED, WHITE } from './CONSTANTS';
 import JWT from 'expo-jwt';
 import { setToken } from './Utils';
 
 export default function Login({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState(false);
   
   function login(navigation) {
     if(email.length == 0) return;
@@ -24,7 +25,7 @@ export default function Login({navigation}) {
 
   async function handleLoginToken(navigation, form_data) {
     // Send data to the backend via POST
-    const res = await fetch('https://efce-223-139-248-33.ngrok-free.app/api/token', {  // Enter your IP address here
+    const res = await fetch('https://b723-223-139-248-33.ngrok-free.app/api/token', {  // Enter your IP address here
       method: 'POST', 
       mode: 'cors', 
       body: form_data // body data type must match "Content-Type" header
@@ -43,48 +44,70 @@ export default function Login({navigation}) {
         console.log('Error: ' + e)
       }
     }
+    else {
+      setLoginError(true)
+    }
   }
 
   return (
-    <View style={styles.container}>
-      <Image source={require('./assets/logo.png')} style={[{ width: 150, height: 150}]} />
+    <ScrollView keyboardShouldPersistTaps='handled' style={{backgroundColor: LIGHT_GREEN}}>
+      <View style={styles.container}>
+        <Image source={require('./assets/logo.png')} style={[{ width: 150, height: 150}]} />
 
-      <View style={styles.inputView}>
-        <TextInput
-            style={styles.TextInput}
-            placeholder="Email"
-            placeholderTextColor="#fff"
-            onChangeText={(email) => setEmail(email)}
-        />
-      </View>
+        {
+          loginError ?  
+          <View style={styles.inputViewError}>
+              <TextInput
+                  style={styles.TextInput}
+                  placeholder="Email"
+                  onChangeText={(email) => setEmail(email)}
+              />
+          </View>
+          :
+          <View style={styles.inputView}>
+              <TextInput
+                  style={styles.TextInput}
+                  placeholder="Email"
+                  onChangeText={(email) => setEmail(email)}
+              />
+          </View>
+        }
+        
+        {
+          loginError ?
+          <View style={styles.inputViewError}>
+            <TextInput
+                style={styles.TextInput}
+                placeholder="Password"
+                secureTextEntry={true}
+                onChangeText={(password) => setPassword(password)}
+              />
+          </View> 
+          :
+          <View style={styles.inputView}>
+            <TextInput
+                style={styles.TextInput}
+                placeholder="Password"
+                secureTextEntry={true}
+                onChangeText={(password) => setPassword(password)}
+              />
+          </View>
+        }
+        
+        <TouchableOpacity style={styles.loginBtn} onPress={() => {
+            login(navigation)
+          }}>
+          <Text style={styles.text}>Login</Text>
+        </TouchableOpacity>
 
-      <View style={styles.inputView}>
-        <TextInput
-            style={styles.TextInput}
-            placeholder="Password"
-            placeholderTextColor="#fff"
-            secureTextEntry={true}
-            onChangeText={(password) => setPassword(password)}
-          />
-      </View>
-
-      <TouchableOpacity style={styles.loginBtn} onPress={() => {
-          login(navigation)
+        <TouchableOpacity onPress={() => {
+          navigation.navigate('Register');
         }}>
-        <Text style={styles.text}>Login</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => {
-        navigation.navigate('Register');
-      }}>
-        <Text style={styles.signup_button}>Sign Up</Text> 
-      </TouchableOpacity>
-
-      <TouchableOpacity>
-        <Text style={styles.forgot_button}>Forgot Password?</Text> 
-      </TouchableOpacity>
-    
-    </View>
+          <Text style={styles.signup_button}><Text style={{color: "#000", fontWeight: "black"}}>Don't Have an Account? </Text>Sign Up</Text> 
+        </TouchableOpacity>
+      
+      </View>
+    </ScrollView>
   );
 }
 
@@ -95,13 +118,24 @@ export default function Login({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: LIGHT_GREEN,
     alignItems: 'center',
     justifyContent: 'top',
     paddingTop: 125,
+    height: '100%'
   },
   inputView: {
-    backgroundColor: LIGHT_BLUE,
+    backgroundColor: WHITE,
+    borderRadius: 30,
+    width: "75%",
+    height: 45,
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  inputViewError: {
+    backgroundColor: LIGHT_RED,
+    borderColor: RED,
+    borderWidth: 1,
     borderRadius: 30,
     width: "75%",
     height: 45,
@@ -109,8 +143,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   TextInput: {
-    color: "#fff",
-    placeholderTextColor: "white",
+    color: GRAY,
     height: 50,
     flex: 1,
     padding: 10,
@@ -121,13 +154,11 @@ const styles = StyleSheet.create({
     height: 30,
     marginTop: 40,
     marginBottom: 10,
-  },
-  forgot_button: {
-    height: 30,
-    marginBottom: 0,
+    color: GREEN,
+    fontWeight: 'bold'
   },
   text: {
-    color: "white"
+    color: WHITE
   },
   loginBtn: { 
     width: "80%",
@@ -136,7 +167,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: 20,
-    backgroundColor: BLUE,
+    backgroundColor: GREEN,
   }
 
 });
